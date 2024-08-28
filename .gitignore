@@ -1,0 +1,14 @@
+.DS_Store
+/venv*
+/.venv*
+*.py[cdo]
+*.swp
+*.swo
+*.egg-info/
+.idea
+.vscode
+.cache/
+build/
+dist/
+__pycache__
+.python-version

@@ -1,0 +1,41 @@
+[project]
+name = "koabot"
+description = "Versatile AI assistant for Discord servers."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Ivan Luengo" }]
+dynamic = ["version"]
+
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Internet",
+  "Topic :: Utilities",
+  "Typing :: Typed",
+]
+
+dependencies = ["blinker>=1.8.2", "discord.py>=2.4.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2.2,<=8.3.2"]
+
+[project.urls]
+Source = "https://github.com/luengoi/koabot/"
+Issues = "https://github.com/luengoi/koabot/issues/"
+
+[project.scripts]
+koa = "koa.main:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = { attr = "koa.VERSION" }
+
+[tool.setuptools.packages.find]
+include = ["koa*"]
