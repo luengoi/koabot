@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import sys
 
@@ -35,6 +36,10 @@ def make_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int | None:
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger("asyncio").setLevel(logging.WARNING)
+    logging.getLogger("discord").setLevel(logging.WARNING)
+
     options = Options()
     parser = make_parser()
     args = parser.parse_args()
@@ -47,7 +52,8 @@ def main() -> int | None:
         options.set(*args.setopt)
         optmanager.load_paths(
             options,
-            os.path.join(options.confdir, "options.toml")
+            os.path.join(options.confdir, "options.toml"),
+            defer=True
         )
 
         bot = KoaBot(options)

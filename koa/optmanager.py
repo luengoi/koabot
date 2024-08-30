@@ -124,12 +124,27 @@ class OptManager:
     """
     def __init__(self) -> None:
         self.changed = blinker.signal("options.changed")
+        self.changed.connect(self._notify_subscribers)
         self.errored = blinker.signal("options.errored")
         self.deferred: dict[str, Any] = {}
         self._subscriptions: list[tuple[weakref.ref[Callable[["OptManager", set[str]], None]], set[str]]] = []
         # _options should be the last attribute set - after that, we raise
         # an exception for attribute assignment to unknown options.
         self._options: dict[str, _Option] = {}
+
+    def _notify_subscribers(self, updated: set[str]) -> None:
+        cleanup = False
+        for ref, opts in self._subscriptions:
+            if (callback := ref()) is not None:
+                if opts & updated:
+                    callback(self, updated)
+            else:
+                cleanup = True
+
+        if cleanup:
+            self._subscriptions = [
+                (ref, opts) for (ref, opts) in self._subscriptions if ref() is not None
+            ]
 
     def add_option[T](
         self,
@@ -414,7 +429,7 @@ def load(options: OptManager, text: str, defer: bool = False) -> None:
         options.update(**parsed)
 
 
-def load_paths(options: OptManager, *paths: Path | str) -> None:
+def load_paths(options: OptManager, *paths: Path | str, defer: bool = False) -> None:
     """
     Load paths in order. Paths that don't exist will be ignored.
     """
@@ -427,6 +442,6 @@ def load_paths(options: OptManager, *paths: Path | str) -> None:
                 except UnicodeDecodeError as ex:
                     raise exceptions.OptionError(f"Error reading {path}: {ex}")
             try:
-                load(options, text)
+                load(options, text, defer)
             except exceptions.OptionError as ex:
                 raise exceptions.OptionError(f"Error reading {path}: {ex}")

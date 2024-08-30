@@ -28,6 +28,7 @@ class Options(optmanager.OptManager):
             "!",
             "Prefix that the message must contain to have a command invoked."
         )
+
         self.add_option(
             "intents.guilds",
             bool,
